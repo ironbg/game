@@ -66,6 +66,7 @@
         onX ? h('button.x', { onclick: onX, 'aria-label': t('common.close') }, DH.icons.img('u_close', 'ci')) : null));
       if (typeof content === 'function') content = content(api);
       if (content) box.appendChild(content);
+      box.appendChild(h('div.mfoot')); // a pinned bottom margin: scrolled content stops as far from the frame as at the sides
     }
     fill(o.body);
     if (o.closable !== false) bg.addEventListener('click', (e) => { if (e.target === bg) api.close(); });
