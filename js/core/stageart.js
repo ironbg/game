@@ -162,7 +162,9 @@
 
   /** Share of a sprite's border that is opaque: how badly its drawing runs past its box. */
   function clipped(cv) {
-    const W = cv.width, H = cv.height, d = cv.getContext('2d').getImageData(0, 0, W, H).data; let n = 0;
+    // read a copy made for reading (reading the sprite itself would slow its canvas down)
+    const W = cv.width, H = cv.height, rc = mk(W, H), rg = rc.getContext('2d', { willReadFrequently: true }); rg.drawImage(cv, 0, 0);
+    const d = rg.getImageData(0, 0, W, H).data; let n = 0;
     const op = (x, y) => d[(y * W + x) * 4 + 3] > 40;
     for (let x = 0; x < W; x++) { if (op(x, 0)) n++; if (op(x, H - 1)) n += 0.2; }
     for (let y = 0; y < H; y++) { if (op(0, y)) n++; if (op(W - 1, y)) n++; }
