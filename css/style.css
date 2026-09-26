@@ -750,7 +750,7 @@ button.x img.ic.ci, .ad-close img.ic.ci { width: 16px; height: 16px; margin: 0; 
 .battlebtn .bb-title { line-height: .95; }
 /* the reward rays stay behind the modal's content (an absolute layer otherwise paints over static siblings) */
 .modal > .rays { z-index: 0; }
-.modal > *:not(.rays):not(.x) { position: relative; z-index: 1; }
+.modal > *:not(.rays):not(.x):not(.mhead) { position: relative; z-index: 1; }
 .modal > .x { z-index: 2; }
 
 /* the language drop-down: dark iron with a gilt rim, a gold chevron, options in a forged panel */
@@ -824,3 +824,17 @@ button.x img.ic.ci, .ad-close img.ic.ci { width: 16px; height: 16px; margin: 0; 
 #hud .pause > img { opacity: .85; filter: drop-shadow(0 1px 0 #000) saturate(.7) brightness(.85); }
 #hud .pause:active { filter: brightness(1.15); }
 #hud .pause .key { color: #b8a888; background: #0c080e; border-color: var(--ring); }
+
+/* v1.36.2: a pinned window header (title + X stay while the content scrolls); the X in dark blood-red with a bronze rim */
+.modal > .mhead { position: sticky; top: -16px; z-index: 3; margin: -16px -10px 10px; padding: 14px 46px 8px; min-height: 48px;
+  background: var(--tex-panel, none) 0 0 / 64px 64px, #1f1624; border-bottom: 1px solid rgba(176,138,72,.25);
+  box-shadow: inset 0 2px 0 0 var(--ring-gold), inset 0 4px 0 0 #050308, 0 6px 8px -6px rgba(0,0,0,.8); } /* it covers the frame's top edge, so it draws it again */
+.modal > .mhead.bare { min-height: 0; height: 0; padding: 0; margin: -16px -10px 16px; border: 0; box-shadow: none; background: none; }
+.modal > .mhead .x { top: 10px; }
+.modal > .mhead.bare .x { top: 4px; }
+.modal > .mhead .mt { margin: 0; line-height: 1.2; }
+.modal .x { position: absolute; top: 6px; right: 6px; width: 34px; height: 34px; padding: 0; border-radius: 8px; display: flex; align-items: center; justify-content: center;
+  border: 2px solid #050308; background: radial-gradient(ellipse at 50% 30%, #5a1018, #2a060a 70%, #160306);
+  box-shadow: inset 0 0 0 1.5px #8a6232, inset 2px 2px 0 1px rgba(255,190,150,.12), inset -2px -2px 0 1px rgba(0,0,0,.45), 0 2px 0 #000; }
+.modal .x img.ic.ci, .modal .x img { width: 20px; height: 20px; }
+.modal .x:active { filter: brightness(1.2); }

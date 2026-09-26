@@ -251,7 +251,7 @@
   ui.openCharacter = (run, opts) => {
     opts = opts || {};
     let sel = opts.overflow ? run.bag[run.bag.length - 1] : null;
-    const m = ui.modal({ title: t('inv.title'), closable: false, cls: 'charsheet', body: () => h('div') });
+    const m = ui.modal({ title: t('inv.title'), closable: false, onX: () => close(), cls: 'charsheet', body: () => h('div') }); // the X: same rules as the Close button
     // closing with the bag too full leaves the newest pieces behind: no need to discard by hand
     const close = () => {
       click();
@@ -331,7 +331,6 @@
         return h('div', it ? itemBox(it, i >= C.BAG_SIZE ? h('span.newdot') : null) : h('div.slot.empty.bagslot'));
       }));
       m.set(h('div',
-        h('button.x', { onclick: close, 'aria-label': t('common.close') }, DH.icons.img('u_close', 'ci')), // top-right X: same rules as the Close button
         over ? h('div.panel.center.small.goldtxt', t('inv.overflow', { n: C.BAG_SIZE })) : null,
         h('div.cs-sec', t('inv.equipment')), eq,
         h('div.cs-sec', t('inv.bag', { n: Math.min(run.bag.length, 99), m: C.BAG_SIZE })), bag,

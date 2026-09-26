@@ -413,7 +413,7 @@
       P.path(g, [13.2, 21, 18.8, 21, 18.8, 25.4, 13.2, 25.4]); P.fill(g, '#1a0e06');
       P.path(g, [14.2, 22, 17.8, 22, 17.8, 24.4, 14.2, 24.4]); P.fill(g, P.lg(g, 0, 22, 0, 24.4, ['#fff0a0', '#c89030']));
       g.strokeStyle = 'rgba(255,230,180,0.35)'; g.lineWidth = 0.8; g.beginPath(); g.moveTo(8, 15.4); g.lineTo(24, 15.4); g.stroke(); },
-    close(g) { for (const [w, c] of [[6, '#140a0c'], [3.4, '#e8dcc8']]) { g.strokeStyle = c; g.lineWidth = w; g.beginPath(); g.moveTo(8, 8); g.lineTo(24, 24); g.moveTo(24, 8); g.lineTo(8, 24); g.stroke(); } },
+    close(g) { for (const [w, c] of [[6, '#140a0c'], [3.4, '#d0b890']]) { g.strokeStyle = c; g.lineWidth = w; g.beginPath(); g.moveTo(8, 8); g.lineTo(24, 24); g.moveTo(24, 8); g.lineTo(8, 24); g.stroke(); } },
     cog(g) { const pts = []; for (let i = 0; i < 16; i++) { const a = i / 16 * Math.PI * 2, r = i % 2 ? 10 : 13.4; pts.push(16 + Math.cos(a) * r, 16 + Math.sin(a) * r); } P.path(g, pts); P.fill(g, P.lg(g, 0, 3, 0, 29, [IRON[1], IRON[2], IRON[4]]));
       P.circle(g, 16, 16, 8.4, P.lg(g, 0, 8, 0, 24, [IRON[0], IRON[2]])); P.circle(g, 16, 16, 4, '#1a1c24'); },
     hand(g) { // a touch: a fingertip dot inside two fading rings

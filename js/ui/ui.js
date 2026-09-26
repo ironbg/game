@@ -60,8 +60,10 @@
     };
     function fill(content) {
       if (o.rays) box.appendChild(h('div.rays'));
-      if (o.closable !== false) box.appendChild(h('button.x', { onclick: () => { DH.audio.play('click'); api.close(); }, 'aria-label': t('common.close') }, DH.icons.img('u_close', 'ci')));
-      if (o.title) box.appendChild(h('div.mt', o.title));
+      // the title and the X stay pinned at the top while the window's content scrolls
+      const onX = o.onX || (o.closable !== false ? () => { DH.audio.play('click'); api.close(); } : null);
+      if (o.title || onX) box.appendChild(h('div.mhead' + (o.title ? '' : '.bare'), o.title ? h('div.mt', o.title) : null,
+        onX ? h('button.x', { onclick: onX, 'aria-label': t('common.close') }, DH.icons.img('u_close', 'ci')) : null));
       if (typeof content === 'function') content = content(api);
       if (content) box.appendChild(content);
     }
