@@ -59,7 +59,7 @@
       set(content) { box.innerHTML = ''; fill(content); },
     };
     function fill(content) {
-      if (o.rays) box.appendChild(h('div.rays'));
+      if (o.rays) box.appendChild(h('div.raysbox', h('div.rays'))); // clipped: the spinning rays must not make a short window scroll
       // the title and the X stay pinned at the top while the window's content scrolls
       const onX = o.onX || (o.closable !== false ? () => { DH.audio.play('click'); api.close(); } : null);
       if (o.title || onX) box.appendChild(h('div.mhead' + (o.title ? '' : '.bare'), o.title ? h('div.mt', o.title) : null,
