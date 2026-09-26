@@ -421,10 +421,10 @@
       g.strokeStyle = 'rgba(240,200,110,0.8)'; g.lineWidth = 2; g.beginPath(); g.arc(16, 16, 8.6, 0, Math.PI * 2); g.stroke();
       P.circle(g, 16, 16, 5, P.vol(g, 16, 16, 5, '#f0c860')); },
     left(g) { P.path(g, [22, 5, 22, 27, 7, 16]); P.fill(g, '#1a1004'); P.path(g, [20.4, 8, 20.4, 24, 9.4, 16]); P.fill(g, P.lg(g, 0, 8, 0, 24, ['#fff0a0', '#e0b040', '#a06a10'])); },
-    pause(g) { for (const x of [8, 18.4]) { P.rrect(g, x - 1, 5, 7.6, 22, 2, '#1a1004'); P.rrect(g, x, 6.4, 5.6, 19.2, 1.4, P.lg(g, 0, 6, 0, 26, ['#fff0a0', '#e0b040', '#8a5410'])); P.rrect(g, x + 0.8, 7.2, 1.4, 16, 0.7, 'rgba(255,255,255,0.45)'); } },
-    full(g) { const c = (x, y, sx, sy) => { for (const [w, col] of [[5.4, '#1a1004'], [2.8, '#f0c050']]) { g.strokeStyle = col; g.lineWidth = w; g.beginPath(); g.moveTo(x, y + sy * 8); g.lineTo(x, y); g.lineTo(x + sx * 8, y); g.stroke(); } };
+    pause(g) { for (const x of [8, 18.4]) { P.rrect(g, x - 1, 5, 7.6, 22, 2, '#1a1004'); P.rrect(g, x, 6.4, 5.6, 19.2, 1.4, P.lg(g, 0, 6, 0, 26, ['#d8ccb0', '#a8987a', '#5a4c3a'])); P.rrect(g, x + 0.8, 7.2, 1.4, 16, 0.7, 'rgba(255,255,255,0.25)'); } },
+    full(g) { const c = (x, y, sx, sy) => { for (const [w, col] of [[5.4, '#0a0806'], [2.8, '#b8a888']]) { g.strokeStyle = col; g.lineWidth = w; g.beginPath(); g.moveTo(x, y + sy * 8); g.lineTo(x, y); g.lineTo(x + sx * 8, y); g.stroke(); } };
       c(6, 6, 1, 1); c(26, 6, -1, 1); c(6, 26, 1, -1); c(26, 26, -1, -1); },
-    unfull(g) { const c = (x, y, sx, sy) => { for (const [w, col] of [[5.4, '#1a1004'], [2.8, '#f0c050']]) { g.strokeStyle = col; g.lineWidth = w; g.beginPath(); g.moveTo(x - sx * 8, y); g.lineTo(x, y); g.lineTo(x, y - sy * 8); g.stroke(); } };
+    unfull(g) { const c = (x, y, sx, sy) => { for (const [w, col] of [[5.4, '#0a0806'], [2.8, '#b8a888']]) { g.strokeStyle = col; g.lineWidth = w; g.beginPath(); g.moveTo(x - sx * 8, y); g.lineTo(x, y); g.lineTo(x, y - sy * 8); g.stroke(); } };
       c(13, 13, 1, 1); c(19, 13, -1, 1); c(13, 19, 1, -1); c(19, 19, -1, -1); },
     pin(g) { // a pushpin with a blood-red head: the pinned quest
       g.strokeStyle = '#1a1004'; g.lineWidth = 3.4; g.beginPath(); g.moveTo(16, 17); g.lineTo(9, 28); g.stroke(); g.strokeStyle = '#c8ccd8'; g.lineWidth = 1.4; g.stroke();

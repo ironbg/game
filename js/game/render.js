@@ -206,8 +206,6 @@
         g.globalAlpha = 1;
       }
     }
-    // manual aim: a chevron ahead of the hero
-    { const ma = this.manualAimAngle(); if (ma != null) { const ax = p.x - cx + Math.cos(ma) * 16, ay = p.y - cy - 2 + Math.sin(ma) * 16; g.save(); g.translate(ax, ay); g.rotate(ma); g.fillStyle = 'rgba(255,120,80,0.85)'; g.beginPath(); g.moveTo(4, 0); g.lineTo(-2, -3); g.lineTo(-0.5, 0); g.lineTo(-2, 3); g.closePath(); g.fill(); g.restore(); } }
     // HP bar
     const hpw = 16, hx = rd(p.x - cx - hpw / 2), hy = rd(p.y - cy + 11);
     g.fillStyle = '#12060a'; g.fillRect(hx - 1, hy - 1, hpw + 2, 4);
@@ -784,15 +782,15 @@
   function stickRing(Rr, hue) {
     const key = 'r' + Rr + hue; if (stickArt[key]) return stickArt[key];
     const pad = 6, S2 = Math.ceil(Rr * 2 + pad * 2), c = G.canvas(S2, S2), g = c.getContext('2d'), o = S2 / 2, u = Rr / 56;
-    const metal = hue === 'aim' ? ['#ffd0b0', '#d06040', '#6a1810', '#2a0604'] : ['#fff0b8', '#d8a040', '#7a4a14', '#2a1404'];
+    const metal = hue === 'aim' ? ['#8a5a50', '#5a2a24', '#2a100c', '#100604'] : ['#8a7a64', '#554638', '#2a2018', '#0e0a08']; // dark iron, old bronze
     // the well: dark glass fading toward the rim
     let gr = g.createRadialGradient(o, o, 0, o, o, Rr);
-    gr.addColorStop(0, 'rgba(8,4,10,0.18)'); gr.addColorStop(0.75, 'rgba(8,4,10,0.38)'); gr.addColorStop(1, 'rgba(8,4,10,0.6)');
+    gr.addColorStop(0, 'rgba(6,3,8,0.2)'); gr.addColorStop(0.75, 'rgba(6,3,8,0.4)'); gr.addColorStop(1, 'rgba(6,3,8,0.62)');
     g.fillStyle = gr; g.beginPath(); g.arc(o, o, Rr, 0, TAU); g.fill();
     // the forged rim: a dark bed, a bright gilt band, a thin inner line
     g.lineWidth = 7 * u; g.strokeStyle = 'rgba(10,6,4,0.85)'; g.beginPath(); g.arc(o, o, Rr - 2 * u, 0, TAU); g.stroke();
     gr = g.createLinearGradient(0, o - Rr, 0, o + Rr); gr.addColorStop(0, metal[0]); gr.addColorStop(0.35, metal[1]); gr.addColorStop(0.7, metal[2]); gr.addColorStop(1, metal[1]);
-    g.lineWidth = 3.4 * u; g.strokeStyle = gr; g.beginPath(); g.arc(o, o, Rr - 2 * u, 0, TAU); g.stroke();
+    g.lineWidth = 3 * u; g.strokeStyle = gr; g.beginPath(); g.arc(o, o, Rr - 2 * u, 0, TAU); g.stroke();
     g.lineWidth = 1.2 * u; g.strokeStyle = 'rgba(0,0,0,0.6)'; g.beginPath(); g.arc(o, o, Rr - 7 * u, 0, TAU); g.stroke();
     g.lineWidth = 1 * u; g.strokeStyle = metal[2]; g.beginPath(); g.arc(o, o, Rr - 8.2 * u, 0, TAU); g.stroke();
     // studs between the chevrons
@@ -809,7 +807,7 @@
         g.beginPath(); g.moveTo(dx, -6 * u); g.lineTo(dx - 5.5 * u, 0); g.lineTo(dx, 6 * u);
         g.lineCap = 'round'; g.lineJoin = 'round';
         g.lineWidth = 4.6 * u; g.strokeStyle = 'rgba(10,6,4,' + al + ')'; g.stroke();
-        g.lineWidth = 2.2 * u; g.strokeStyle = metal[1]; g.globalAlpha = al; g.stroke(); g.globalAlpha = 1;
+        g.lineWidth = 2 * u; g.strokeStyle = metal[0]; g.globalAlpha = al * 0.7; g.stroke(); g.globalAlpha = 1;
       }
       g.restore();
     }
@@ -818,17 +816,17 @@
   function stickKnob(Rr, hue) {
     const key = 'k' + Rr + hue; if (stickArt[key]) return stickArt[key];
     const r = Rr * 0.4, pad = r * 0.9, S2 = Math.ceil((r + pad) * 2), c = G.canvas(S2, S2), g = c.getContext('2d'), o = S2 / 2;
-    const [hi, mid, lo, glow] = hue === 'aim' ? ['#fff0e0', '#ff7050', '#8a1408', 'rgba(255,90,60,'] : ['#fffbe0', '#ffb838', '#9a3c08', 'rgba(255,170,60,'];
-    let gr = g.createRadialGradient(o, o, r * 0.6, o, o, r + pad); gr.addColorStop(0, glow + '0.55)'); gr.addColorStop(1, glow + '0)');
+    const [hi, mid, lo, glow] = hue === 'aim' ? ['#c07060', '#6a1c14', '#2a0806', 'rgba(170,30,20,'] : ['#c8a068', '#6a4020', '#241208', 'rgba(190,110,40,']; // a smoky orb, an ember deep inside
+    let gr = g.createRadialGradient(o, o, r * 0.6, o, o, r + pad); gr.addColorStop(0, glow + '0.22)'); gr.addColorStop(1, glow + '0)');
     g.fillStyle = gr; g.beginPath(); g.arc(o, o, r + pad, 0, TAU); g.fill();
     // a gilt bezel, then the orb with a hot core and a glint
     g.fillStyle = '#1a0c04'; g.beginPath(); g.arc(o, o, r + r * 0.2, 0, TAU); g.fill();
-    gr = g.createLinearGradient(0, o - r, 0, o + r); gr.addColorStop(0, '#fff0b0'); gr.addColorStop(0.5, '#b07a28'); gr.addColorStop(1, '#5a3410');
+    gr = g.createLinearGradient(0, o - r, 0, o + r); gr.addColorStop(0, '#7a6a54'); gr.addColorStop(0.5, '#3e3228'); gr.addColorStop(1, '#1a1410');
     g.fillStyle = gr; g.beginPath(); g.arc(o, o, r + r * 0.12, 0, TAU); g.fill();
     gr = g.createRadialGradient(o - r * 0.3, o - r * 0.35, r * 0.05, o, o, r);
-    gr.addColorStop(0, hi); gr.addColorStop(0.35, mid); gr.addColorStop(0.85, lo); gr.addColorStop(1, '#2a0c02');
+    gr.addColorStop(0, hi); gr.addColorStop(0.3, mid); gr.addColorStop(0.8, lo); gr.addColorStop(1, '#0a0402');
     g.fillStyle = gr; g.beginPath(); g.arc(o, o, r, 0, TAU); g.fill();
-    g.fillStyle = 'rgba(255,255,255,0.75)'; g.beginPath(); g.ellipse(o - r * 0.32, o - r * 0.42, r * 0.28, r * 0.16, -0.5, 0, TAU); g.fill();
+    g.fillStyle = 'rgba(255,240,220,0.3)'; g.beginPath(); g.ellipse(o - r * 0.32, o - r * 0.42, r * 0.28, r * 0.16, -0.5, 0, TAU); g.fill();
     return (stickArt[key] = c);
   }
   R.renderStick = function (ctx) {
@@ -837,14 +835,14 @@
     for (const [s, hue] of [[DH.input.stick, 'move'], [DH.input.aimStick, 'aim']]) {
       if (!s.active || !s.touch) continue;
       const ring = stickRing(Rr, hue), knob = stickKnob(Rr, hue), ox = s.ox * d, oy = s.oy * d;
-      ctx.globalAlpha = 0.9; ctx.drawImage(ring, ox - ring.width / 2, oy - ring.height / 2);
+      ctx.globalAlpha = 0.8; ctx.drawImage(ring, ox - ring.width / 2, oy - ring.height / 2);
       const m = Math.hypot(s.dx, s.dy);
       if (m > 0.15) { // the chevron the hero is heading toward flares up
         const a = Math.atan2(s.dy, s.dx), gr = ctx.createRadialGradient(ox, oy, Rr * 0.55, ox, oy, Rr * 1.08);
-        gr.addColorStop(0, 'rgba(255,190,80,0)'); gr.addColorStop(0.8, hue === 'aim' ? 'rgba(255,110,70,0.5)' : 'rgba(255,200,90,0.5)'); gr.addColorStop(1, 'rgba(255,190,80,0)');
+        gr.addColorStop(0, 'rgba(255,190,80,0)'); gr.addColorStop(0.8, hue === 'aim' ? 'rgba(160,40,30,0.3)' : 'rgba(180,130,70,0.22)'); gr.addColorStop(1, 'rgba(255,190,80,0)');
         ctx.globalAlpha = Math.min(1, m); ctx.fillStyle = gr; ctx.beginPath(); ctx.moveTo(ox, oy); ctx.arc(ox, oy, Rr * 1.08, a - 0.5, a + 0.5); ctx.closePath(); ctx.fill();
       }
-      ctx.globalAlpha = 1; ctx.drawImage(knob, ox + s.dx * RAD * d - knob.width / 2, oy + s.dy * RAD * d - knob.height / 2);
+      ctx.globalAlpha = 0.9; ctx.drawImage(knob, ox + s.dx * RAD * d - knob.width / 2, oy + s.dy * RAD * d - knob.height / 2);
     }
     ctx.globalAlpha = 1;
   };

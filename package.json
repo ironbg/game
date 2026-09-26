@@ -1,6 +1,6 @@
 {
   "name": "dreadhollow",
-  "version": "1.36.0",
+  "version": "1.36.1",
   "private": true,
   "description": "Dreadhollow - dark fantasy horde-survival roguelite for web and mobile",
   "scripts": {
