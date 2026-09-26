@@ -1,0 +1,20 @@
+rules_version = '2';
+// One cloud save per account: saves/{uid}. Only its owner can read, write or delete it.
+// Every write must move the revision forward by exactly one, so two devices can never
+// silently overwrite each other (the game resolves the conflict and retries).
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /saves/{uid} {
+      function owner() { return request.auth != null && request.auth.uid == uid; }
+      function valid() {
+        let d = request.resource.data;
+        return d.keys().hasOnly(['v', 'ts', 'device', 'summary', 'data', 'rev', 'updated'])
+          && d.rev is int && d.v is int && d.data is string && d.data.size() < 800000
+          && d.rev == (resource == null ? 1 : resource.data.rev + 1);
+      }
+      allow read, delete: if owner();
+      allow create, update: if owner() && valid();
+    }
+    match /{document=**} { allow read, write: if false; }
+  }
+}

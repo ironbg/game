@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+  <meta name="theme-color" content="#0a070d">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="description" content="Dreadhollow - a dark fantasy horde survival roguelite.">
+  <title>Dreadhollow</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/icon-192.png">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="app">
+    <canvas id="game"></canvas>
+    <div id="hud" class="hidden"></div>
+    <div id="menu" class="hidden"></div>
+    <div id="modals"></div>
+    <div id="toasts" class="toastbox"></div>
+    <div id="boot"><div class="logo">DREADHOLLOW</div><div class="sub">Halls of the Damned</div><div class="bar"><i></i></div></div>
+  </div>
+
+  <!-- core -->
+  <script src="js/core/ns.js"></script>
+  <script src="js/i18n/i18n.js"></script>
+  <!-- languages: add a file + a script tag to add a language -->
+  <script src="js/i18n/en.js"></script>
+  <script src="js/i18n/bg.js"></script>
+  <!-- data -->
+  <script src="js/data/content.js"></script>
+  <script src="js/data/economy.js"></script>
+  <script src="js/data/artifacts.js"></script>
+  <script src="js/data/deeds.js"></script>
+  <!-- graphics -->
+  <script src="js/core/art.js"></script>
+  <script src="js/core/gfx.js"></script>
+  <script src="js/core/paint_heroes.js"></script>
+  <script src="js/core/paint_enemies.js"></script>
+  <script src="js/core/paint_bosses.js"></script>
+  <script src="js/core/paint_props.js"></script>
+  <script src="js/core/paint_landmarks.js"></script>
+  <script src="js/core/stageart.js"></script>
+  <script src="js/core/icons.js"></script>
+  <!-- engine -->
+  <script src="js/core/audio.js"></script>
+  <script src="js/core/input.js"></script>
+  <script src="js/core/platform.js"></script>
+  <script src="js/core/save.js"></script>
+  <script src="js/services/ads.js"></script>
+  <script src="js/services/iap.js"></script>
+  <script src="js/services/firebase.js"></script>
+  <script src="js/services/cloud.js"></script>
+  <script src="js/meta/meta.js"></script>
+  <script src="js/game/view.js"></script>
+  <script src="js/game/run.js"></script>
+  <script src="js/game/combat.js"></script>
+  <script src="js/game/abilities.js"></script>
+  <script src="js/game/bosses.js"></script>
+  <script src="js/game/render.js"></script>
+  <script src="js/game/vfx.js"></script>
+  <script src="js/game/artifacts.js"></script>
+  <script src="js/game/halls.js"></script>
+  <script src="js/game/secrets.js"></script>
+  <script src="js/game/hazards.js"></script>
+  <script src="js/game/landmarks.js"></script>
+  <script src="js/game/weather.js"></script>
+  <!-- ui -->
+  <script src="js/ui/ui.js"></script>
+  <script src="js/ui/screens.js"></script>
+  <script src="js/ui/popups.js"></script>
+  <script src="js/ui/runui.js"></script>
+  <script src="js/ui/menuscene.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    // the app ships every file in its package: the offline cache is for the browser version only
+    if ('serviceWorker' in navigator && location.protocol.startsWith('http') && !DH.platform.native) {
+      window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });
+    }
+  </script>
+</body>
+</html>

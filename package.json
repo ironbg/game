@@ -1,0 +1,14 @@
+{
+  "name": "dreadhollow",
+  "version": "1.34.3",
+  "private": true,
+  "description": "Dreadhollow - dark fantasy horde-survival roguelite for web and mobile",
+  "scripts": {
+    "start": "npx --yes http-server . -p 8080 -c-1",
+    "check": "node tools/check-i18n.js",
+    "build": "node tools/build-www.js",
+    "cap:add:android": "npm run build && npx cap add android",
+    "cap:sync": "npm run build && npx cap sync",
+    "deploy": "npm run build && npx --yes firebase-tools deploy"
+  }
+}

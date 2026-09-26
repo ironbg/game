@@ -1,0 +1,14 @@
+{
+  "appId": "com.dreadhollow.game",
+  "appName": "Dreadhollow",
+  "webDir": "www",
+  "backgroundColor": "#0a070d",
+  "plugins": {
+    "FirebaseAuthentication": {
+      "skipNativeAuth": true,
+      "providers": [
+        "google.com"
+      ]
+    }
+  }
+}
