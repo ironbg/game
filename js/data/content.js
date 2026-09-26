@@ -26,7 +26,7 @@
   ];
   /* Agony: the gauge climbs by itself (+1 rank every 4:48 of a 30-minute hall = every 96 s here) and with every
    * kill; a revive drains a fifth of it. With Agony on, champions come every (50 - 3 x AR) x 0.95^TR seconds. */
-  C.AGONY = { passive: 1 / 96, kill: 0.0012, eliteKill: 5, revive: 1, champBase: 50, champPerAR: 3 };
+  C.AGONY = { passive: 1 / 96, kill: 0, eliteKill: 5, revive: 1, champBase: 50, champPerAR: 3 }; // the gauge climbs with time only: rank V at 8:00 of a 10-minute hall
   /* Lament Shards per Lord by Torment Rank (chance of at least 2 / 3 / 4), interpolated between ranks */
   C.SHARD_TABLE = [[0, 0, 0, 0], [10, 1, 0.57, 0.1], [20, 1, 1, 0.62], [30, 1, 1, 1]];
   C.KILL_MODE = 2500;            // Kill Mode (Shrine): the Lord rises at this many kills instead of 10:00

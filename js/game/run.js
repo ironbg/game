@@ -78,7 +78,8 @@
 
     /* ---------------- level & xp ---------------- */
     /** Experience multiplier now: Growth, Agony (per hall) and Torment. */
-    xpMult() { return this.P.growth * (1 + this.agony * (this.stage.agonyXp || 0.15)) * (this.tormentXp || 1); }
+    // Agony's extra foes (+35% a rank) share the horde's usual XP between them: only the hall's Agony bonus raises it
+    xpMult() { return this.P.growth * (1 + this.agony * (this.stage.agonyXp || 0.15)) / (1 + this.agony * 0.35) * (this.tormentXp || 1); }
     gainXp(v, mult) {
       this.xp += v * (mult == null ? this.xpMult() : mult); // a gem's worth is fixed when it drops
       while (this.xp >= this.xpNext) {

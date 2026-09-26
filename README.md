@@ -130,9 +130,9 @@ Controls: drag anywhere on the screen (floating joystick) or use WASD / arrow ke
 * **Blessings with requirements:** most Shrine Blessings open with a deed. For example, Might opens at level 30, Revival after surviving 3 minutes in the Crypt, and Haste at 1,000 kills in one run. Swiftness, Vitality, Armor, Reach and Magnet are open from the start. Levels already bought keep working.
 * **UI icons:** no emoji. Agony, Kill Mode, secrets, locks, checks, stars, arrows, settings, close and the tutorial use pixel icons (`u_*` in `js/core/icons.js`).
 * **Revives:** one free revive per run after a rewarded ad. Gem revives cost 150, then 300, then 600 gems, at most three per run (`E.REVIVE_GEMS`). Shrine revives (Revival blessing) are separate.
-* **Agony mode:** unlocked per stage after the first clear. The gauge, from 0 to V, climbs by itself (+1 rank every 96 s) and with every kill. A revive drains a fifth of it (one rank). Each rank brings:
+* **Agony mode:** unlocked per stage after the first clear. The gauge, from 0 to V, climbs with time only (+1 rank every 96 s, rank V at 8:00). A revive drains a fifth of it (one rank). Each rank brings:
   * denser and tougher hordes;
-  * more XP, by hall: Crypt +52.9%, Catacombs +39.5%, Abyss +31%, Aqueduct +24%, Discord and Blightmire +13%.
+  * more XP, by hall: Crypt +52.9%, Catacombs +39.5%, Abyss +31%, Aqueduct +24%, Discord and Blightmire +13% (the denser horde shares the usual XP; only this bonus raises it).
 
   Agony champions arrive every (50 − 3×AR) × 0.95^TR s. Each drops **one** reward, checked top to bottom:
   * Bucket, up to 2 per run;
