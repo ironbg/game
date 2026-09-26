@@ -33,6 +33,7 @@
       right.append(sideBtn('u_cog', t('home.settings'), () => ui.openSettings()));
       right.append(sideBtn('n_pass', t('home.pass'), () => ui.go('quests', 'pass'), b.pass));
       right.append(sideBtn('n_book', t('home.deeds'), () => ui.go('quests', 'deeds')));
+      if (DH.input.desktop && DH.input.fullscreenAvailable()) right.append(sideBtn(DH.input.isFullscreen() ? 'u_unfull' : 'u_full', t('settings.fullscreen'), () => { DH.input.toggleFullscreen(); setTimeout(() => ui.refresh(), 300); }));
       root.append(left, right);
       root.append(h('div.hero-stage',
         h('div.hero-name', t('hero.' + s.selectedHero + '.name')),
@@ -348,14 +349,17 @@
         const n = all.filter((d) => d.cat === c).length, dn = all.filter((d) => d.cat === c && M.deedDone(d.id)).length;
         return h('button' + (cat === c ? '.on' : ''), { onclick: () => { click(); ui.sub.deedCat = c; ui.refresh(); } }, t('deeds.cat.' + c) + ' ' + dn + '/' + n);
       })));
-      const list = all.filter((d) => d.cat === cat).sort((a, b) => M.deedDone(a.id) - M.deedDone(b.id));
+      const pinned = DH.save.data.trackedDeed;
+      const list = all.filter((d) => d.cat === cat).sort((a, b) => M.deedDone(a.id) - M.deedDone(b.id) || (b.id === pinned) - (a.id === pinned));
+      box.append(h('div.small.muted.center', { style: { margin: '2px 0 6px' } }, A.img('u_pin', 'ci'), ' ' + t('deeds.pinHint')));
       list.slice(0, 80).forEach((d) => {
         const ok = M.deedDone(d.id), pr = M.deedProgress(d);
         box.append(h('div.panel.item.deed' + (ok ? '.claimed' : ''),
           h('div.ico', A.img(ok ? 'n_trophy' : d.cat === 'ability' ? 'ab_' + d.args.ab : d.cat === 'hero' ? 'h_' + d.args.hero : d.cat === 'stage' ? 'n_skull' : 'n_scroll')),
           h('div.grow', h('div.t', ui.deedText(d)), h('div.d.goldtxt', ui.deedReward(d)),
             pr && !ok ? h('div.prog', h('div.bar', h('i', { style: { width: Math.min(100, pr.v / pr.n * 100) + '%' } })), h('div.v', U.fmt(Math.min(pr.v, pr.n)) + ' / ' + U.fmt(pr.n))) : null),
-          ok ? h('span.good', { style: { fontSize: '20px', fontWeight: 800 } }, A.img('u_check', 'bigic')) : null));
+          ok ? h('span.good', { style: { fontSize: '20px', fontWeight: 800 } }, A.img('u_check', 'bigic'))
+            : h('button.pinbtn' + (d.id === pinned ? '.on' : ''), { title: t('deeds.pin'), onclick: (e) => { e.stopPropagation(); click(); const on = M.trackDeed(d.id); ui.toast(t(on ? 'deeds.pinned' : 'deeds.unpinned'), on ? 'good' : null); ui.refresh(); } }, A.img('u_pin'))));
       });
       if (list.length > 80) box.append(h('div.center.small.muted', '…'));
       return box;

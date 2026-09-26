@@ -194,6 +194,18 @@
     this.renderVfxFront(g, cx, cy, W, H);
     this.drawWeatherSky(g, cx, cy, W, H);
 
+    // aiming line (Settings): dots from the hero toward the main weapon's aim, or the nearest foe it will fire at
+    if (this.settings.aimLine && p.hp > 0) {
+      let ang = this.manualAimAngle(), tg = null;
+      if (ang == null) { tg = this.nearest(p.x, p.y, 320); if (tg) ang = Math.atan2(tg.y - p.y, tg.x - p.x); }
+      if (ang != null) {
+        const len = tg ? Math.min(150, Math.hypot(tg.x - p.x, tg.y - p.y) - 4) : 150, ca = Math.cos(ang), sa = Math.sin(ang), ph = (now * 30) % 6;
+        g.fillStyle = '#ffd890';
+        for (let d = 10 + ph; d < len; d += 6) { g.globalAlpha = 0.75 * (1 - d / 170); g.fillRect(rd(p.x - cx + ca * d) - 0.5, rd(p.y - cy - 3 + sa * d) - 0.5, 1.5, 1.5); }
+        if (tg) { g.globalAlpha = 0.8; g.strokeStyle = '#ffd890'; g.lineWidth = 1; g.beginPath(); g.arc(rd(tg.x - cx), rd(tg.y - cy - 3), Math.max(5, tg.r * 0.9), 0, TAU); g.stroke(); }
+        g.globalAlpha = 1;
+      }
+    }
     // manual aim: a chevron ahead of the hero
     { const ma = this.manualAimAngle(); if (ma != null) { const ax = p.x - cx + Math.cos(ma) * 16, ay = p.y - cy - 2 + Math.sin(ma) * 16; g.save(); g.translate(ax, ay); g.rotate(ma); g.fillStyle = 'rgba(255,120,80,0.85)'; g.beginPath(); g.moveTo(4, 0); g.lineTo(-2, -3); g.lineTo(-0.5, 0); g.lineTo(-2, 3); g.closePath(); g.fill(); g.restore(); } }
     // HP bar
@@ -229,7 +241,12 @@
     this.renderTexts(ctx, cx, cy, S);
     this.renderMarkers(ctx, S);
     ctx.drawImage(V.getVignette(), 0, 0);
-    if (this.hurtFlash > 0) { ctx.fillStyle = 'rgba(200,0,20,' + this.hurtFlash * 0.22 + ')'; ctx.fillRect(0, 0, V.cw, V.ch); }
+    const fl = this.settings.flash == null ? 1 : this.settings.flash; // Settings: damage flash intensity
+    if (this.hurtFlash > 0 && fl > 0) { ctx.fillStyle = 'rgba(200,0,20,' + this.hurtFlash * 0.22 * fl + ')'; ctx.fillRect(0, 0, V.cw, V.ch); }
+    if (this.healGlow > 0) { // blood flowing back in: a soft crimson rim that fades
+      const a = Math.min(0.3, this.healGlow * 0.3), grd = ctx.createRadialGradient(V.cw / 2, V.ch / 2, Math.min(V.cw, V.ch) * 0.35, V.cw / 2, V.ch / 2, Math.max(V.cw, V.ch) * 0.72);
+      grd.addColorStop(0, 'rgba(255,60,80,0)'); grd.addColorStop(1, 'rgba(255,60,90,' + a + ')'); ctx.fillStyle = grd; ctx.fillRect(0, 0, V.cw, V.ch);
+    }
     if (this.whiteFlash > 0) { ctx.fillStyle = 'rgba(255,255,255,' + this.whiteFlash * 0.5 + ')'; ctx.fillRect(0, 0, V.cw, V.ch); }
     if (p.hp / this.P.maxHp < 0.25) {
       const a = 0.18 + Math.sin(now * 6) * 0.08;
@@ -762,13 +779,72 @@
     }
     ctx.restore();
   };
+  /* Virtual sticks (touch only): a forged ring with four chevrons and a glowing orb for a knob; drawn once, then blitted. */
+  const stickArt = {};
+  function stickRing(Rr, hue) {
+    const key = 'r' + Rr + hue; if (stickArt[key]) return stickArt[key];
+    const pad = 6, S2 = Math.ceil(Rr * 2 + pad * 2), c = G.canvas(S2, S2), g = c.getContext('2d'), o = S2 / 2, u = Rr / 56;
+    const metal = hue === 'aim' ? ['#ffd0b0', '#d06040', '#6a1810', '#2a0604'] : ['#fff0b8', '#d8a040', '#7a4a14', '#2a1404'];
+    // the well: dark glass fading toward the rim
+    let gr = g.createRadialGradient(o, o, 0, o, o, Rr);
+    gr.addColorStop(0, 'rgba(8,4,10,0.18)'); gr.addColorStop(0.75, 'rgba(8,4,10,0.38)'); gr.addColorStop(1, 'rgba(8,4,10,0.6)');
+    g.fillStyle = gr; g.beginPath(); g.arc(o, o, Rr, 0, TAU); g.fill();
+    // the forged rim: a dark bed, a bright gilt band, a thin inner line
+    g.lineWidth = 7 * u; g.strokeStyle = 'rgba(10,6,4,0.85)'; g.beginPath(); g.arc(o, o, Rr - 2 * u, 0, TAU); g.stroke();
+    gr = g.createLinearGradient(0, o - Rr, 0, o + Rr); gr.addColorStop(0, metal[0]); gr.addColorStop(0.35, metal[1]); gr.addColorStop(0.7, metal[2]); gr.addColorStop(1, metal[1]);
+    g.lineWidth = 3.4 * u; g.strokeStyle = gr; g.beginPath(); g.arc(o, o, Rr - 2 * u, 0, TAU); g.stroke();
+    g.lineWidth = 1.2 * u; g.strokeStyle = 'rgba(0,0,0,0.6)'; g.beginPath(); g.arc(o, o, Rr - 7 * u, 0, TAU); g.stroke();
+    g.lineWidth = 1 * u; g.strokeStyle = metal[2]; g.beginPath(); g.arc(o, o, Rr - 8.2 * u, 0, TAU); g.stroke();
+    // studs between the chevrons
+    for (let i = 0; i < 4; i++) {
+      const a = Math.PI / 4 + i * Math.PI / 2, x = o + Math.cos(a) * (Rr - 2 * u), y = o + Math.sin(a) * (Rr - 2 * u);
+      g.fillStyle = '#140a04'; g.beginPath(); g.arc(x, y, 4.2 * u, 0, TAU); g.fill();
+      const sg = g.createRadialGradient(x - u, y - u, 0, x, y, 3.2 * u); sg.addColorStop(0, metal[0]); sg.addColorStop(1, metal[2]);
+      g.fillStyle = sg; g.beginPath(); g.arc(x, y, 3 * u, 0, TAU); g.fill();
+    }
+    // four double chevrons pointing out
+    for (let i = 0; i < 4; i++) {
+      g.save(); g.translate(o, o); g.rotate(i * Math.PI / 2);
+      for (const [dx, al] of [[-Rr + 13 * u, 0.55], [-Rr + 19 * u, 0.9]]) {
+        g.beginPath(); g.moveTo(dx, -6 * u); g.lineTo(dx - 5.5 * u, 0); g.lineTo(dx, 6 * u);
+        g.lineCap = 'round'; g.lineJoin = 'round';
+        g.lineWidth = 4.6 * u; g.strokeStyle = 'rgba(10,6,4,' + al + ')'; g.stroke();
+        g.lineWidth = 2.2 * u; g.strokeStyle = metal[1]; g.globalAlpha = al; g.stroke(); g.globalAlpha = 1;
+      }
+      g.restore();
+    }
+    return (stickArt[key] = c);
+  }
+  function stickKnob(Rr, hue) {
+    const key = 'k' + Rr + hue; if (stickArt[key]) return stickArt[key];
+    const r = Rr * 0.4, pad = r * 0.9, S2 = Math.ceil((r + pad) * 2), c = G.canvas(S2, S2), g = c.getContext('2d'), o = S2 / 2;
+    const [hi, mid, lo, glow] = hue === 'aim' ? ['#fff0e0', '#ff7050', '#8a1408', 'rgba(255,90,60,'] : ['#fffbe0', '#ffb838', '#9a3c08', 'rgba(255,170,60,'];
+    let gr = g.createRadialGradient(o, o, r * 0.6, o, o, r + pad); gr.addColorStop(0, glow + '0.55)'); gr.addColorStop(1, glow + '0)');
+    g.fillStyle = gr; g.beginPath(); g.arc(o, o, r + pad, 0, TAU); g.fill();
+    // a gilt bezel, then the orb with a hot core and a glint
+    g.fillStyle = '#1a0c04'; g.beginPath(); g.arc(o, o, r + r * 0.2, 0, TAU); g.fill();
+    gr = g.createLinearGradient(0, o - r, 0, o + r); gr.addColorStop(0, '#fff0b0'); gr.addColorStop(0.5, '#b07a28'); gr.addColorStop(1, '#5a3410');
+    g.fillStyle = gr; g.beginPath(); g.arc(o, o, r + r * 0.12, 0, TAU); g.fill();
+    gr = g.createRadialGradient(o - r * 0.3, o - r * 0.35, r * 0.05, o, o, r);
+    gr.addColorStop(0, hi); gr.addColorStop(0.35, mid); gr.addColorStop(0.85, lo); gr.addColorStop(1, '#2a0c02');
+    g.fillStyle = gr; g.beginPath(); g.arc(o, o, r, 0, TAU); g.fill();
+    g.fillStyle = 'rgba(255,255,255,0.75)'; g.beginPath(); g.ellipse(o - r * 0.32, o - r * 0.42, r * 0.28, r * 0.16, -0.5, 0, TAU); g.fill();
+    return (stickArt[key] = c);
+  }
   R.renderStick = function (ctx) {
-    const d = DH.view.dpr, Rr = DH.input.RADIUS * d;
-    for (const [s, col] of [[DH.input.stick, '#e8c26a'], [DH.input.aimStick, '#ff7050']]) { // move stick (gold), aim stick (red)
-      if (!s.active) continue;
-      ctx.globalAlpha = 0.35; ctx.fillStyle = '#000'; ctx.beginPath(); ctx.arc(s.ox * d, s.oy * d, Rr, 0, TAU); ctx.fill();
-      ctx.globalAlpha = 0.5; ctx.strokeStyle = col; ctx.lineWidth = 2 * d; ctx.stroke();
-      ctx.globalAlpha = 0.8; ctx.fillStyle = col; ctx.beginPath(); ctx.arc((s.ox + s.dx * DH.input.RADIUS) * d, (s.oy + s.dy * DH.input.RADIUS) * d, Rr * 0.42, 0, TAU); ctx.fill();
+    if (this.settings.hideJoystick) return;
+    const d = DH.view.dpr, RAD = DH.input.RADIUS, Rr = Math.round(RAD * d);
+    for (const [s, hue] of [[DH.input.stick, 'move'], [DH.input.aimStick, 'aim']]) {
+      if (!s.active || !s.touch) continue;
+      const ring = stickRing(Rr, hue), knob = stickKnob(Rr, hue), ox = s.ox * d, oy = s.oy * d;
+      ctx.globalAlpha = 0.9; ctx.drawImage(ring, ox - ring.width / 2, oy - ring.height / 2);
+      const m = Math.hypot(s.dx, s.dy);
+      if (m > 0.15) { // the chevron the hero is heading toward flares up
+        const a = Math.atan2(s.dy, s.dx), gr = ctx.createRadialGradient(ox, oy, Rr * 0.55, ox, oy, Rr * 1.08);
+        gr.addColorStop(0, 'rgba(255,190,80,0)'); gr.addColorStop(0.8, hue === 'aim' ? 'rgba(255,110,70,0.5)' : 'rgba(255,200,90,0.5)'); gr.addColorStop(1, 'rgba(255,190,80,0)');
+        ctx.globalAlpha = Math.min(1, m); ctx.fillStyle = gr; ctx.beginPath(); ctx.moveTo(ox, oy); ctx.arc(ox, oy, Rr * 1.08, a - 0.5, a + 0.5); ctx.closePath(); ctx.fill();
+      }
+      ctx.globalAlpha = 1; ctx.drawImage(knob, ox + s.dx * RAD * d - knob.width / 2, oy + s.dy * RAD * d - knob.height / 2);
     }
     ctx.globalAlpha = 1;
   };

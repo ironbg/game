@@ -71,8 +71,17 @@
     if (game.mode !== 'run' || !game.run) return;
     if (game.run.state === 'playing') game.pause();
   });
+  DH.events.on('bagKey', () => {
+    if (game.mode !== 'run' || !game.run) return;
+    if (ui.charClose && ui.topModal() && ui.topModal().el.classList.contains('charsheet')) { ui.charClose(); return; }
+    if (game.run.state === 'playing' && !ui.topModal()) game.openBag();
+  });
+  document.addEventListener('fullscreenchange', () => { if (game.mode === 'menu' && ui.screen === 'home' && !ui.topModal()) ui.refresh(); });
   DH.events.on('missionDone', () => { if (game.mode === 'menu') ui.toast(t('quests.missionDone'), 'good'); });
-  document.addEventListener('visibilitychange', () => { if (document.hidden) game.pause(); });
+  // leaving the window pauses the run (Settings: Pause when focus is lost); a hidden app always does
+  const pauseOnBlur = () => DH.save.data.settings.pauseOnBlur !== false;
+  document.addEventListener('visibilitychange', () => { if (document.hidden && (pauseOnBlur() || !DH.input.desktop)) game.pause(); });
+  window.addEventListener('blur', () => { if (pauseOnBlur() && DH.input.desktop) game.pause(); });
   DH.events.on('app:pause', () => game.pause());
   // Android back button: close the top window, pause a run, or leave the app from the home screen
   DH.events.on('app:back', () => {
@@ -103,7 +112,7 @@
   async function boot() {
     const s = await DH.save.load();
     DH.i18n.set(s.settings.lang || DH.i18n.detect());
-    DH.audio.setVolumes(s.settings.sfx, s.settings.music);
+    DH.audio.setVolumes(s.settings.sfx * s.settings.master, s.settings.music * s.settings.master);
     DH.view.init(document.getElementById('game'));
     DH.input.attach(document.getElementById('game'));
     M.ensureDaily();

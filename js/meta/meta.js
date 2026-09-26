@@ -353,6 +353,37 @@
     if (c.type === 'stat') return { v: s.stats[c.stat] || 0, n: c.n };
     return null;
   };
+  /** Live progress of a deed during a run (the pinned quest on the HUD): { v, n, time, here }.
+   *  `here` is false when this run cannot count toward it (another hall or hero). */
+  meta.deedLive = (d, run) => {
+    const s = S(), c = d.cond, R = run, k = R.runLength / C.RUN_LENGTH, dmgAll = () => Object.values(R.dmgByAb).reduce((a, b) => a + b, 0);
+    let here = (!c.stage || c.stage === R.stageId) && (!c.hero || c.hero === R.heroId);
+    const yes = (b) => ({ v: b ? 1 : 0, n: 1 });
+    let o;
+    switch (c.type) {
+      case 'survive': case 'adept': case 'heathen': case 'direct': o = { v: R.time, n: c.t * k, time: true }; break;
+      case 'win': case 'heroWin': o = yes(R.state === 'victory'); break;
+      case 'agony': case 'mark': here = here && R.agonyOn; o = { v: Math.floor(R.maxAgony + 1e-6), n: c.a }; break;
+      case 'killsRun': o = { v: R.kills, n: c.n }; break;
+      case 'boss': here = C.stages[R.stageId].bosses.some((b) => b.id === c.id); o = yes(R.bossesKilled.includes(c.id)); break;
+      case 'heroLevel': case 'level': o = { v: R.level, n: c.n }; break;
+      case 'abDmg': here = R.abilities.some((a) => a.id === c.ab); o = { v: (s.stats.abDmg[c.ab] || 0) + (R.dmgByAb[c.ab] || 0), n: c.n }; break;
+      case 'stat': { const live = { kills: R.kills, tomes: R.tomes, wellSent: R.wellSent, eliteKills: R.eliteKills, championKills: R.championKills, oozes: R.oozes }[c.stat]; o = { v: (s.stats[c.stat] || 0) + (live || 0), n: c.n }; break; }
+      case 'dread': here = R.dread >= c.n; o = yes(R.state === 'victory' && here); break;
+      case 'secret': case 'secretBy': o = yes(R.secretT != null || (c.type === 'secret' && !!s.secrets[c.stage])); break;
+      case 'dmgRun': o = { v: R.dmgTags()[c.tag] || 0, n: c.n }; break;
+      case 'abRun': here = R.abilities.some((a) => a.id === c.ab); o = { v: R.dmgByAb[c.ab] || 0, n: c.n }; break;
+      case 'crits': o = { v: R.crits || 0, n: c.n }; break;
+      case 'dmgStage': o = { v: dmgAll(), n: c.n }; break;
+      case 'abilitiesBy': o = { v: R.abilities.length, n: c.n }; break;
+      case 'shardsRun': o = { v: R.shards || 0, n: c.n }; break;
+      default: o = yes(false);
+    }
+    o.here = here; return o;
+  };
+  /** The quest pinned to the HUD (a deed id), or null once it is done. */
+  meta.trackedDeed = () => { const id = S().trackedDeed, d = id && DH.deeds.byId[id]; return d && !S().deeds[id] ? d : null; };
+  meta.trackDeed = (id) => { const s = S(); s.trackedDeed = s.trackedDeed === id ? null : id; changed(); return s.trackedDeed; };
   /** Evaluate deeds after a run (r = run summary). Returns newly completed deeds. */
   meta.checkDeeds = (r) => {
     const s = S(), done = [];

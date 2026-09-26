@@ -786,3 +786,34 @@ button.x img.ic.ci, .ad-close img.ic.ci { width: 16px; height: 16px; margin: 0; 
 /* each modal keeps its layers to itself, so a modal opened on top (e.g. the account over Settings) is never pierced
    by the content of the one below it */
 .modal-bg { isolation: isolate; }
+
+/* ===================== v1.36: forged HUD buttons, pinned quest, settings sections ===================== */
+#hud .pause { position: relative; width: 40px; height: 40px; padding: 0; display: flex; align-items: center; justify-content: center; border-radius: 9px;
+  background: radial-gradient(ellipse at 50% 30%, #8a1826 0%, #4a0810 55%, #1e0206 100%); border: 2px solid #120604;
+  box-shadow: inset 0 0 0 1.5px #d8a848, inset 0 0 0 3px #3a1806, inset 0 3px 8px rgba(255,150,140,.28), inset 0 -4px 8px rgba(0,0,0,.6), 0 2px 6px rgba(0,0,0,.75); }
+#hud .pause::before { content: ''; position: absolute; inset: 1px; border-radius: 7px; pointer-events: none;
+  background: radial-gradient(circle at 5px 5px, #ffe8a0 0 1.4px, #7a5010 1.6px 2.4px, transparent 2.6px), radial-gradient(circle at calc(100% - 5px) 5px, #ffe8a0 0 1.4px, #7a5010 1.6px 2.4px, transparent 2.6px),
+    radial-gradient(circle at 5px calc(100% - 5px), #ffe8a0 0 1.4px, #7a5010 1.6px 2.4px, transparent 2.6px), radial-gradient(circle at calc(100% - 5px) calc(100% - 5px), #ffe8a0 0 1.4px, #7a5010 1.6px 2.4px, transparent 2.6px); }
+#hud .pause:active { transform: translateY(1px); filter: brightness(1.2); }
+#hud .pause > img { width: 24px; height: 24px; image-rendering: pixelated; filter: drop-shadow(0 1px 0 #000); }
+#hud .bagbtn > img { width: 26px; height: 26px; }
+#hud .pause .key { position: absolute; left: -4px; bottom: -5px; min-width: 12px; padding: 1px 2px; font: 7px/9px var(--num); color: #ffe8b0; background: #140a06; border: 1px solid #8a6424; border-radius: 3px; }
+#hud .tracker { position: absolute; top: calc(142px + var(--safe-t)); left: 8px; width: min(46vw, 210px); padding: 4px 7px 5px; border-radius: 6px;
+  background: linear-gradient(90deg, rgba(20,10,8,.82), rgba(20,10,8,.5)); border-left: 2px solid var(--gold); box-shadow: 0 1px 4px rgba(0,0,0,.6); color: #f4e8d0; text-shadow: 0 1px 0 #000; }
+#hud .tracker .trh { font-size: 9px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--gold); display: flex; align-items: center; gap: 3px; }
+#hud .tracker .trh img { width: 12px; height: 12px; }
+#hud .tracker .trt { font-size: 10.5px; line-height: 1.25; margin: 1px 0 3px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+#hud .tracker .trp { display: flex; align-items: center; gap: 6px; }
+#hud .tracker .trbar { flex: 1; height: 4px; background: rgba(0,0,0,.7); border-radius: 2px; overflow: hidden; }
+#hud .tracker .trbar i { display: block; height: 100%; background: linear-gradient(90deg, #b07a20, #ffd060); transition: width .3s; }
+#hud .tracker .trp b { font: 8px var(--num); color: #fff; white-space: nowrap; }
+#hud .tracker.off { opacity: .6; } #hud .tracker.off .trp b { font: 9px var(--body); color: var(--muted); }
+#hud .tracker.done { border-left-color: #7ae070; } #hud .tracker.done .trbar i { background: linear-gradient(90deg, #3a9a30, #9af070); }
+#hud .buffs { top: calc(88px + var(--safe-t)); }
+#hud .cursed { top: calc(114px + var(--safe-t)); }
+.pinbtn { flex: none; width: 34px; height: 34px; padding: 0; border-radius: 8px; background: rgba(10,6,12,.6); border: 1px solid var(--line); cursor: pointer; display: flex; align-items: center; justify-content: center; opacity: .55; filter: grayscale(.7); }
+.pinbtn img { width: 22px; height: 22px; }
+.pinbtn.on { opacity: 1; filter: none; border-color: var(--gold); box-shadow: 0 0 8px rgba(240,190,90,.45); }
+.setsec { margin: 12px 0 4px; padding-bottom: 3px; font-family: var(--title); font-size: 13px; letter-spacing: .06em; color: var(--gold); border-bottom: 1px solid rgba(200,154,72,.3); }
+.setsec:first-child { margin-top: 0; }
+.sethint { margin: -4px 0 8px; }

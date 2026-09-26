@@ -45,7 +45,7 @@
       this.spawnAcc = 0; this.eventIdx = 0; this.bossIdx = 0; this.urnT = 4; this.wellT = 80; // the Strange Pendulum comes only with its Artifact (artifacts.js)
       this.state = 'playing'; this.pendingLevels = 0; this.queue = [];
       this.usedAdRevive = false; this.usedGemRevive = 0; this.usedAdReroll = false;
-      this.shake = 0; this.hurtFlash = 0; this.whiteFlash = 0; this.victoryT = -1;
+      this.shake = 0; this.hurtFlash = 0; this.whiteFlash = 0; this.healGlow = 0; this.healAcc = 0; this.healT = 0; this.victoryT = -1;
       this.bosses = []; this.dmgByAb = {};
       this.bag = []; this.runGear = {}; this.wellSent = null; this.well = null; this.wellExtra = []; this.buckets = 0;
       this.champDrops = {};
@@ -121,7 +121,7 @@
       if (this.defT > 0 && (this.defT -= dt) <= 0) this.defStacks = 0;
       if (regen > 0 && p.hp < st.maxHp) this.heal(regen * dt, true);
       this.shake = Math.max(0, this.shake - dt * 18);
-      this.hurtFlash = Math.max(0, this.hurtFlash - dt * 2.5);
+      this.hurtFlash = Math.max(0, this.hurtFlash - dt * 2.5); this.healTick(dt);
       this.whiteFlash = Math.max(0, this.whiteFlash - dt * 4);
       let bEnd = false;
       for (const k in this.buffs) if (this.buffs[k] > 0) { this.buffs[k] -= dt; if (this.buffs[k] <= 0) { this.buffs[k] = 0; bEnd = true; } }
@@ -380,7 +380,31 @@
     heal(n, quiet) {
       const p = this.player, before = p.hp;
       p.hp = Math.min(this.P.maxHp, p.hp + n * (this.fx_.heal || 1));
-      if (!quiet && p.hp - before >= 1) this.text(p.x, p.y - 14, '+' + Math.round(p.hp - before), '#6cf07a');
+      const got = p.hp - before; if (!(got > 0)) return;
+      if (quiet) { this.healAcc += got; return; } // regeneration: gathered and shown once a second (see healTick)
+      if (got >= 1) {
+        this.text(p.x, p.y - 14, '+' + Math.round(got), '#ff7080');
+        this.bloodIn(Math.min(12, 3 + Math.round(got / this.P.maxHp * 40)));
+        this.healGlow = Math.min(1, this.healGlow + got / this.P.maxHp * 5);
+      }
+    }
+    /** Drops of blood drawn in from around the hero: health flowing back. */
+    bloodIn(n) {
+      const p = this.player; if (this.settings.lowFx) n = Math.ceil(n / 2);
+      for (let i = 0; i < n; i++) {
+        if (this.parts.length > 700) this.parts.shift();
+        const a = Math.random() * TAU, r = U.rand(14, 24);
+        this.parts.push({ x: p.x + Math.cos(a) * r, y: p.y - 6 + Math.sin(a) * r * 0.8, vx: -Math.sin(a) * 30, vy: Math.cos(a) * 30 - 10, life: U.rand(0.6, 0.9), max: 0.9, c: U.pick(['#e01830', '#ff4050', '#b00c20', '#ff8a96']), s: Math.random() < 0.5 ? 3 : 2, home: true });
+      }
+    }
+    healTick(dt) {
+      this.healGlow = Math.max(0, this.healGlow - dt * 1.4);
+      this.healT += dt; if (this.healT < 1) return;
+      this.healT = 0;
+      const n = this.healAcc; this.healAcc = 0; if (n < 0.5) return;
+      const p = this.player;
+      this.bloodIn(Math.min(6, 2 + Math.floor(n / this.P.maxHp * 60)));
+      if (n >= 1 && this.settings.dmgNumbers !== false) this.text(p.x + U.rand(-4, 4), p.y - 16, '+' + Math.floor(n), '#ff8a96');
     }
     nova(x, y, dmg, R, kind) {
       this.whiteFlash = 1; this.shake = 6; DH.audio.play('boom');
@@ -718,7 +742,9 @@
     }
     updateFx(dt) {
       for (let i = this.fx.length - 1; i >= 0; i--) { const f = this.fx[i]; f.life -= dt; if (f.update) f.update(this, f, dt); if (f.life <= 0) this.fx.splice(i, 1); }
-      for (let i = this.parts.length - 1; i >= 0; i--) { const q = this.parts[i]; q.life -= dt; q.x += q.vx * dt; q.y += q.vy * dt; q.vx *= 0.94; q.vy = q.vy * 0.94 + (q.g || 0) * dt; if (q.life <= 0) this.parts.splice(i, 1); }
+      for (let i = this.parts.length - 1; i >= 0; i--) { const q = this.parts[i]; q.life -= dt;
+        if (q.home) { const P = this.player, dx = P.x - q.x, dy = P.y - 6 - q.y, d = Math.hypot(dx, dy) || 1; q.vx += dx / d * 520 * dt; q.vy += dy / d * 520 * dt; if (d < 4) q.life = 0; }
+        q.x += q.vx * dt; q.y += q.vy * dt; q.vx *= 0.94; q.vy = q.vy * 0.94 + (q.g || 0) * dt; if (q.life <= 0) this.parts.splice(i, 1); }
       for (let i = this.texts.length - 1; i >= 0; i--) { const x = this.texts[i]; x.life -= dt; x.y -= dt * 22; if (x.life <= 0) this.texts.splice(i, 1); }
       for (let i = this.decals.length - 1; i >= 0; i--) { const d = this.decals[i]; d.life -= dt; if (d.life <= 0) this.decals.splice(i, 1); }
     }

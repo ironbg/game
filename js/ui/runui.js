@@ -41,18 +41,36 @@
   hud.build = (run) => {
     const el = document.getElementById('hud');
     el.innerHTML = '';
-    const r = hud.refs = {};
+    const r = hud.refs = {}, desk = DH.input.desktop;
     r.xpFill = h('i'); r.lvl = h('span');
     r.timer = h('div.timer'); r.kills = h('span'); r.gold = h('span');
     r.build = h('div.build'); r.buffs = h('div.buffs'); r.curse = h('div.cursed.hidden', A.img('u_agony', 'ci'), r.curseT = h('b'));
     r.boss = h('div.bossbar.hidden', r.bossName = h('div.n'), h('div.bar', r.bossFill = h('i')));
     r.agony = run.agonyOn ? h('div.agony', h('span.al', t('hud.agony')), r.agFill = h('div.agbar', h('i')), r.agNum = h('b')) : null;
-    el.append(h('div.xp', r.xpFill, r.lvl),
-      h('div.top', h('div.hbtns', h('button.pause', { onclick: () => DH.game.pause() }, 'II'), h('button.pause.bagbtn', { onclick: () => DH.game.openBag() }, A.img('u_bag'), r.bagN = h('i'))), r.timer,
+    el.append(...[h('div.xp', r.xpFill, r.lvl),
+      h('div.top', h('div.hbtns',
+        h('button.pause', { onclick: () => DH.game.pause(), title: t('pause.title') + (desk ? ' [P]' : '') }, A.img('u_pause'), desk ? h('b.key', 'P') : null),
+        h('button.pause.bagbtn', { onclick: () => DH.game.openBag(), title: t('inv.title') + (desk ? ' [I]' : '') }, A.img('u_bag'), r.bagN = h('i'), desk ? h('b.key', 'I') : null),
+        desk && DH.input.fullscreenAvailable() ? r.fsBtn = h('button.pause.fsbtn', { onclick: () => { DH.input.toggleFullscreen(); }, title: t('settings.fullscreen') + ' [F]' }, A.img(DH.input.isFullscreen() ? 'u_unfull' : 'u_full'), h('b.key', 'F')) : null), r.timer,
         h('div.stats', h('div', r.kills, A.img('n_skull')), h('div', r.gold, A.img('i_gold')))),
-      r.build, r.buffs, r.curse, r.boss, r.agony, r.lordK = run.lordKills ? h('div.lordk', A.img('u_agony', 'ci'), r.lordKT = h('span')) : null);
+      r.build, r.buffs, r.curse, r.boss, r.agony, r.track = hud.tracker(run), r.lordK = run.lordKills ? h('div.lordk', A.img('u_agony', 'ci'), r.lordKT = h('span')) : null].filter(Boolean)); // append() would print a null as text
     if (!DH.save.data.tutorialDone) { r.tut = h('div.tutorial', h('div', h('span.hand', A.img('u_hand', 'bigic')), t('tutorial.move'), h('br'), h('span.small.muted', t('tutorial.auto')))); el.append(r.tut); }
     hud.sig = ''; el.classList.remove('hidden');
+  };
+  /** The pinned quest (chosen in Deeds): its text and live progress under the kill and gold counters. */
+  hud.tracker = (run) => {
+    const d = DH.meta.trackedDeed(); if (!d) return null;
+    const r = hud.refs;
+    r.trD = d; r.trV = h('b'); r.trFill = h('i');
+    return h('div.tracker', h('div.trh', A.img('u_pin', 'ci'), t('hud.quest')), h('div.trt', ui.deedText(d)), h('div.trp', h('div.trbar', r.trFill), r.trV));
+  };
+  const trackUpdate = (run) => {
+    const r = hud.refs; if (!r.track) return;
+    const p = DH.meta.deedLive(r.trD, run), done = p.here && p.v >= p.n;
+    const f = (v) => p.time ? U.fmtTime(Math.min(v, p.n)) : p.n === 1 ? String(Math.min(v, 1)) : U.fmt(Math.min(Math.floor(v), p.n));
+    r.trV.textContent = p.here ? f(p.v) + '/' + f(p.n) : t('hud.questElsewhere');
+    r.trFill.style.width = (p.here ? Math.min(100, p.v / p.n * 100) : 0) + '%';
+    r.track.classList.toggle('off', !p.here); r.track.classList.toggle('done', done);
   };
   const bq = []; let bBusy = false;
   function nextBanner() {
@@ -86,6 +104,8 @@
     r.boss.classList.toggle('hidden', !b);
     if (b) { r.bossName.textContent = t('enemy.' + b.id) + (b.enr > 1.01 ? ' · ' + t('hud.enraged') : ''); r.bossFill.style.width = Math.max(0, b.hp / b.maxHp * 100) + '%'; }
     if (r.agony) { r.agFill.firstChild.style.width = (run.agony / C.AGONY_MAX * 100) + '%'; r.agNum.textContent = ['0', 'I', 'II', 'III', 'IV', 'V'][Math.floor(run.agony + 1e-6)]; }
+    if (r.track && now - (r.trT || 0) > 400) { r.trT = now; trackUpdate(run); }
+    if (r.fsBtn) { const fs = DH.input.isFullscreen(); if (fs !== r.fsOn) { r.fsOn = fs; r.fsBtn.firstChild.replaceWith(A.img(fs ? 'u_unfull' : 'u_full')); } }
     if (r.tut && (run.time > 6 || (run.player.moving && run.time > 1.5))) { r.tut.remove(); r.tut = null; DH.save.data.tutorialDone = true; DH.save.persist(); }
   };
   ui.hud = hud;
@@ -237,8 +257,9 @@
       click();
       const left = run.bag.splice(C.BAG_SIZE);
       if (left.length) ui.toast(t('inv.leftBehind', { item: left.map((it) => t('gear.' + it.type)).join(', ') }));
-      m.close(); if (opts.onClose) opts.onClose();
+      ui.charClose = null; m.close(); if (opts.onClose) opts.onClose();
     };
+    ui.charClose = close; // the I key closes it again
     const slotOf = (it) => E.slots.find((sl) => run.runGear[sl] === it);
     const commit = !!(run.fx_ || {}).commit;
     const itemBox = (it, extra) => h('div.slot.rar' + it.rarity + (it === sel ? '.picked' : ''), { onclick: () => { click(); sel = it; draw(); } }, A.img('g_' + it.type), extra);

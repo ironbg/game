@@ -19,7 +19,7 @@
       energy: 30, energyTs: now,
       accountLevel: 1, accountXp: 0,
       heroes: { knight: true }, selectedHero: 'knight',
-      selectedStage: 'crypt', cleared: {}, bestTime: {},
+      selectedStage: 'crypt', trackedDeed: null, cleared: {}, bestTime: {},
       shrine: {},
       gear: [], equipped: { head: null, neck: null, chest: null, hands: null, feet: null, ring1: null, ring2: null, mark: null }, nextGearId: 1,
       loadouts: {}, archiveBy: {}, // per hero: equipped gear + Mark, and Archive shards
@@ -36,7 +36,7 @@
       purchases: { noAds: false, once: {}, firstGems: {}, soulUntil: 0, soulLastDay: null, total: 0 },
       chestPity: 0, freeChestTs: 0,
       runsSinceAd: 0,
-      settings: { music: 0.5, sfx: 0.8, vibration: true, lang: null, dmgNumbers: true, shake: true, lowFx: false, outlines: true, fxAlpha: 1, twinStick: false, mouseAim: false },
+      settings: { music: 0.5, sfx: 0.8, vibration: true, lang: null, dmgNumbers: true, shake: true, lowFx: false, outlines: true, fxAlpha: 1, twinStick: false, mouseAim: false, master: 1, pauseOnBlur: true, hideJoystick: false, aimLine: false, flash: 1 },
       tutorialDone: false,
       seen: {},
     };

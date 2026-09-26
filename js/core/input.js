@@ -14,6 +14,8 @@
   window.addEventListener('keydown', (e) => {
     keys[e.code] = true;
     if (e.code === 'Escape' || e.code === 'KeyP') DH.events.emit('pauseKey');
+    if (e.code === 'KeyI' && !e.repeat) DH.events.emit('bagKey');
+    if (e.code === 'KeyF' && !e.repeat && enabled) DH.input.toggleFullscreen();
     if (e.code === 'KeyR' && enabled && DH.save) { const st = DH.save.data.settings; st.mouseAim = !st.mouseAim; DH.save.persist(); DH.events.emit('run:warning', t(st.mouseAim ? 'hud.aimMouse' : 'hud.aimAuto')); }
   });
   window.addEventListener('keyup', (e) => { keys[e.code] = false; });
@@ -21,7 +23,7 @@
   window.addEventListener('pointermove', (e) => { if (e.pointerType === 'mouse') { mouse.x = e.clientX; mouse.y = e.clientY; mouse.seen = true; } });
 
   function start(k, e) {
-    k.active = true; k.id = e.pointerId;
+    k.active = true; k.id = e.pointerId; k.touch = e.pointerType !== 'mouse'; // a mouse drag still steers, but only a finger gets a drawn stick
     k.ox = k.x = e.clientX; k.oy = k.y = e.clientY;
     k.dx = k.dy = 0;
     try { surface.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
@@ -66,6 +68,18 @@
       return null;
     },
     RADIUS,
+    /** A computer (mouse and keyboard) rather than a phone or tablet: no drawn sticks, a full-screen button, key hints. */
+    desktop: !(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()) && !/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent || '') && !(window.matchMedia && matchMedia('(pointer: coarse)').matches),
+    fullscreenAvailable() { const d = document.documentElement; return !(DH.platform && DH.platform.native) && !!(d.requestFullscreen || d.webkitRequestFullscreen); },
+    isFullscreen() { return !!(document.fullscreenElement || document.webkitFullscreenElement); },
+    toggleFullscreen() {
+      if (!this.fullscreenAvailable()) return;
+      const d = document.documentElement;
+      try {
+        if (this.isFullscreen()) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+        else { const r = (d.requestFullscreen || d.webkitRequestFullscreen).call(d); if (r && r.catch) r.catch(() => {}); }
+      } catch (err) { /* the browser refused */ }
+    },
     /** Returns movement vector with length <= 1 */
     axis() {
       let x = 0, y = 0;

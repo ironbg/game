@@ -41,7 +41,10 @@
       const el = h('div.switch' + (s[key] ? '.on' : ''), { onclick: () => { s[key] = !s[key]; el.classList.toggle('on', s[key]); click(); DH.save.persist(); onchange && onchange(); } });
       return el;
     };
-    const slider = (key) => h('input', { type: 'range', min: 0, max: 100, value: Math.round(s[key] * 100), oninput: (e) => { s[key] = e.target.value / 100; DH.audio.setVolumes(s.sfx, s.music); DH.save.persist(); } });
+    const slider = (key) => h('input', { type: 'range', min: 0, max: 100, value: Math.round(s[key] * 100), oninput: (e) => { s[key] = e.target.value / 100; DH.audio.setVolumes(s.sfx * s.master, s.music * s.master); DH.save.persist(); } });
+    const desk = DH.input.desktop, row = (key, ctl, hint) => [h('div.setrow', h('label', t('settings.' + key)), ctl), hint ? h('div.small.muted.sethint', t('settings.' + key + 'Hint')) : null];
+    const autoAim = h('div.switch' + (!s.mouseAim ? '.on' : ''), { onclick: () => { s.mouseAim = !s.mouseAim; autoAim.classList.toggle('on', !s.mouseAim); click(); DH.save.persist(); } });
+    const fsSw = h('div.switch' + (DH.input.isFullscreen() ? '.on' : ''), { onclick: () => { click(); DH.input.toggleFullscreen(); setTimeout(() => fsSw.classList.toggle('on', DH.input.isFullscreen()), 250); } });
     // the language picker: a forged drop-down in the game's style (a native <select> looks like the system's)
     const langSel = h('div.dd');
     { const langs = DH.i18n.list(), cur = langs.find((l) => l.code === DH.i18n.current) || langs[0];
@@ -50,16 +53,26 @@
         h('button.dd-btn', { onclick: (e) => { e.stopPropagation(); click(); langSel.classList.toggle('open'); if (!langSel.dataset.l) { langSel.dataset.l = 1; m.el.addEventListener('click', () => langSel.classList.remove('open')); } } }, h('span', cur.native), h('i.dd-arrow')),
         h('div.dd-list', langs.map((l) => h('button.dd-opt' + (l.code === cur.code ? '.on' : ''), { onclick: (e) => { e.stopPropagation(); pick(l); } }, h('span', l.native), l.code === cur.code ? A.img('u_check', 'ci') : null)))); }
     const m = ui.modal({ title: t('settings.title'), body: h('div',
-      h('div.setrow', h('label', t('settings.music')), slider('music')),
-      h('div.setrow', h('label', t('settings.sfx')), slider('sfx')),
-      h('div.setrow', h('label', t('settings.vibration')), sw('vibration')),
-      h('div.setrow', h('label', t('settings.dmgNumbers')), sw('dmgNumbers')),
-      h('div.setrow', h('label', t('settings.shake')), sw('shake')),
-      h('div.setrow', h('label', t('settings.lowFx')), sw('lowFx')),
-      h('div.setrow', h('label', t('settings.outlines')), sw('outlines')),
-      h('div.setrow', h('label', t('settings.twinStick')), sw('twinStick')),
-      h('div.small.muted', { style: { margin: '-4px 0 8px' } }, t('settings.twinStickHint')),
-      h('div.setrow', h('label', t('settings.fxAlpha')), slider('fxAlpha')),
+      h('div.setsec', t('settings.secAudio')),
+      row('master', slider('master')),
+      row('music', slider('music')),
+      row('sfx', slider('sfx')),
+      desk ? null : row('vibration', sw('vibration')),
+      h('div.setsec', t('settings.secControls')),
+      desk ? row('autoAim', autoAim, true) : null,
+      desk ? row('pauseOnBlur', sw('pauseOnBlur')) : null,
+      desk && DH.input.fullscreenAvailable() ? row('fullscreen', fsSw, true) : null,
+      desk ? null : row('twinStick', sw('twinStick'), true),
+      desk ? null : row('hideJoystick', sw('hideJoystick')),
+      h('div.setsec', t('settings.secInterface')),
+      row('aimLine', sw('aimLine'), true),
+      row('dmgNumbers', sw('dmgNumbers')),
+      row('flash', slider('flash')),
+      row('fxAlpha', slider('fxAlpha')),
+      row('shake', sw('shake')),
+      row('outlines', sw('outlines')),
+      row('lowFx', sw('lowFx')),
+      h('div.setsec', t('settings.secGame')),
       h('div.setrow', h('label', t('settings.language')), langSel),
       h('div.col', { style: { marginTop: '14px' } },
         h('button.btn.small.gold.block', { onclick: () => ui.openAccount() }, t(DH.cloud.user ? 'cloud.account' : 'cloud.signInSave')),
