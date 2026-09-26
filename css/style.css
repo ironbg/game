@@ -843,3 +843,20 @@ button.x img.ic.ci, .ad-close img.ic.ci { width: 16px; height: 16px; margin: 0; 
   background: var(--tex-panel, none) 0 0 / 64px 64px, #1f1624; box-shadow: inset 0 -2px 0 0 var(--ring-gold), inset 0 -4px 0 0 #050308, 0 -6px 8px -6px rgba(0,0,0,.8); }
 /* v1.36.4: the rays sit in a clipping box, so a window that fits never scrolls */
 .modal > .raysbox { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
+/* v1.36.5: every button is cut from the same old stone: the texture under a tint that sets its kind */
+.btn { background: linear-gradient(180deg, rgba(255,240,220,.12) 0 2px, transparent 2px calc(100% - 3px), rgba(0,0,0,.45) calc(100% - 3px)),
+    linear-gradient(180deg, rgba(60,44,70,.3), rgba(22,14,26,.55)), var(--tex-stone, none) 0 0 / 64px 64px, #3a2c42; }
+.btn.gold { background: radial-gradient(120% 110% at 50% 135%, rgba(255,140,40,.34), transparent 62%), linear-gradient(180deg, rgba(255,220,150,.14) 0 2px, transparent 2px),
+    linear-gradient(180deg, rgba(58,40,40,.22) 0%, rgba(26,16,20,.42) 55%, rgba(10,6,8,.64) 100%), var(--tex-stone, none) 0 0 / 64px 64px, #2a1e22; }
+.btn.ghost { background: linear-gradient(180deg, rgba(20,14,22,.42), rgba(8,5,10,.66)), var(--tex-stone, none) 0 0 / 64px 64px, #151018; }
+.btn.red { background: linear-gradient(180deg, rgba(255,110,110,.5) 0 2px, rgba(190,36,48,.55) 2px 50%, rgba(130,14,26,.66) 50% calc(100% - 3px), rgba(60,4,10,.9) calc(100% - 3px)), var(--tex-stone, none) 0 0 / 64px 64px, #7c1018; }
+.btn.green, .btn.ad { background: linear-gradient(180deg, rgba(150,240,150,.45) 0 2px, rgba(46,150,64,.6) 2px 50%, rgba(26,100,44,.74) 50% calc(100% - 3px), rgba(10,50,20,.9) calc(100% - 3px)), var(--tex-stone, none) 0 0 / 64px 64px, #1c6a2c; }
+.btn.gem { background: linear-gradient(180deg, rgba(240,150,240,.45) 0 2px, rgba(170,60,180,.6) 2px 50%, rgba(120,36,140,.74) 50% calc(100% - 3px), rgba(60,12,70,.9) calc(100% - 3px)), var(--tex-stone, none) 0 0 / 64px 64px, #62186e; }
+.btn.blue { background: linear-gradient(180deg, rgba(160,200,255,.45) 0 2px, rgba(60,120,210,.6) 2px 50%, rgba(40,86,170,.74) 50% calc(100% - 3px), rgba(16,40,100,.9) calc(100% - 3px)), var(--tex-stone, none) 0 0 / 64px 64px, #1c3a80; }
+.dd-btn { background: linear-gradient(180deg, rgba(255,220,150,.14) 0 2px, transparent 2px), linear-gradient(180deg, rgba(58,40,40,.25), rgba(10,6,8,.66)), var(--tex-stone, none) 0 0 / 64px 64px, #221824; }
+.battlebtn .bb-face { background: radial-gradient(60% 120% at 50% 118%, rgba(255,120,30,.5), rgba(255,80,20,.16) 45%, transparent 70%),
+    linear-gradient(180deg, rgba(62,46,52,.28) 0%, rgba(36,24,32,.45) 38%, rgba(14,8,12,.7) 100%), var(--tex-stone, none) 0 0 / 64px 64px, #160e14; }
+.bbwrap.agony .battlebtn .bb-face { background: radial-gradient(60% 120% at 50% 118%, rgba(255,40,40,.55), rgba(200,20,20,.2) 45%, transparent 70%),
+    linear-gradient(180deg, rgba(70,24,30,.5) 0%, rgba(34,8,14,.7) 45%, rgba(14,4,8,.85) 100%), var(--tex-stone, none) 0 0 / 64px 64px, #10040a; }
+#hud .pause, .pinbtn { background: linear-gradient(180deg, rgba(34,24,40,.35), rgba(12,8,14,.62)), var(--tex-stone, none) 0 0 / 64px 64px, #1a1220; }
+.modal .x { background: linear-gradient(180deg, rgba(120,20,30,.62), rgba(40,4,8,.82)), var(--tex-stone, none) 0 0 / 64px 64px, #2a060a; }

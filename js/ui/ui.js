@@ -125,10 +125,40 @@
     g.putImageData(id, 0, 0);
     return 'url(' + c.toDataURL() + ')';
   }
+  /** Old worn stone for buttons: two scales of mottling, grain, pits, chips and a few carved cracks (a 64px tile). */
+  function ancientStone(base, seed) {
+    const N = 64, G = DH.gfx, c = G.canvas(N, N), g = c.getContext('2d'), id = g.createImageData(N, N), d = id.data;
+    const [r0, g0, b0] = G.rgb(base), rng = U.seeded(seed), K = new Float32Array(N * N);
+    const lattice = (n) => { const L = []; for (let i = 0; i < n * n; i++) L.push(rng()); return (x, y) => L[((y % n + n) % n) * n + ((x % n + n) % n)]; };
+    const noise = (lat, cell, x, y) => { // smooth value noise, wraps with the tile
+      const fx = x / cell, fy = y / cell, ix = Math.floor(fx), iy = Math.floor(fy);
+      let tx = fx - ix, ty = fy - iy; tx = tx * tx * (3 - 2 * tx); ty = ty * ty * (3 - 2 * ty);
+      return (lat(ix, iy) * (1 - tx) + lat(ix + 1, iy) * tx) * (1 - ty) + (lat(ix, iy + 1) * (1 - tx) + lat(ix + 1, iy + 1) * tx) * ty;
+    };
+    const big = lattice(4), mid = lattice(8), fine = lattice(16);
+    for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
+      K[y * N + x] = 1 + (noise(big, 16, x, y) - 0.5) * 0.7 + (noise(mid, 8, x, y) - 0.5) * 0.42 + (noise(fine, 4, x, y) - 0.5) * 0.2 + (rng() - 0.5) * 0.18;
+    }
+    const at = (x, y) => ((y % N + N) % N) * N + ((x % N + N) % N);
+    for (let i = 0; i < 70; i++) K[at(Math.floor(rng() * N), Math.floor(rng() * N))] *= 0.5; // pits
+    for (let i = 0; i < 36; i++) K[at(Math.floor(rng() * N), Math.floor(rng() * N))] *= 1.3; // chips
+    for (let i = 0; i < 4; i++) { // cracks: a dark cut with a lit lower lip
+      let x = Math.floor(rng() * N), y = Math.floor(rng() * N), dx = rng() < 0.5 ? 1 : -1;
+      for (let j = 0, n = 10 + Math.floor(rng() * 14); j < n; j++) {
+        K[at(x, y)] *= 0.4; K[at(x, y + 1)] *= 1.2;
+        const r = rng(); if (r < 0.55) x += dx; else if (r < 0.8) y++; else y--;
+      }
+    }
+    for (let i = 0; i < N * N; i++) { d[i * 4] = r0 * K[i]; d[i * 4 + 1] = g0 * K[i]; d[i * 4 + 2] = b0 * K[i]; d[i * 4 + 3] = 255; }
+    G.quantize(id, { dither: 8, sat: 0.9, contrast: 1 });
+    g.putImageData(id, 0, 0);
+    return 'url(' + c.toDataURL() + ')';
+  }
   ui.textures = () => {
     const st = document.documentElement.style;
     st.setProperty('--tex-panel', stoneTexture('#2a2030', 0.55, 7));
     st.setProperty('--tex-dark', stoneTexture('#1a141e', 0.6, 11));
+    st.setProperty('--tex-stone', ancientStone('#5a4c52', 23));
   };
 
   /* ---------------- shell ---------------- */
