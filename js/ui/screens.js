@@ -569,8 +569,7 @@
     const contents = p.grant ? M.rewardPreview(p.grant) : [];
     if (id === 'soulcard') contents.push(...M.rewardPreview(p.daily).map((e) => ({ icon: e.icon, text: e.text + t('shop.perDay') })));
     return h('div.panel.' + cls.split(' ').join('.'), { style: { marginTop: '8px' } },
-      ribbon ? h('div.ribbon', ribbon) : null,
-      h('div.ot', t('product.' + id)),
+      h('div.ohead', h('div.ot', t('product.' + id)), ribbon ? h('div.ribbon', ribbon) : null), // the tag sits beside the title, never over the text
       h('div.small', desc),
       contents.length ? h('div.contents', contents.map(ui.rw)) : null,
       h('button.btn.gold.block.shine', { onclick: () => DH.iap.buy(id) }, DH.iap.price(id)));

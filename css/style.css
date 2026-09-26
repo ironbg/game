@@ -860,3 +860,14 @@ button.x img.ic.ci, .ad-close img.ic.ci { width: 16px; height: 16px; margin: 0; 
     linear-gradient(180deg, rgba(70,24,30,.5) 0%, rgba(34,8,14,.7) 45%, rgba(14,4,8,.85) 100%), var(--tex-stone, none) 0 0 / 64px 64px, #10040a; }
 #hud .pause, .pinbtn { background: linear-gradient(180deg, rgba(34,24,40,.35), rgba(12,8,14,.62)), var(--tex-stone, none) 0 0 / 64px 64px, #1a1220; }
 .modal .x { background: linear-gradient(180deg, rgba(120,20,30,.62), rgba(40,4,8,.82)), var(--tex-stone, none) 0 0 / 64px 64px, #2a060a; }
+/* v1.36.6: offer banners in the same old stone under their colour; the tag is a blood-red pennant beside the title */
+.offer { border: 2px solid #050308; box-shadow: inset 0 0 0 2px #c9953a, inset 0 0 0 3px #1a0e08, 0 3px 0 #000;
+  background: radial-gradient(ellipse at 20% 0%, rgba(255,106,224,.22), transparent 60%), linear-gradient(160deg, rgba(70,30,74,.72), rgba(26,15,30,.86)), var(--tex-stone, none) 0 0 / 64px 64px, #1a0f1e; }
+.offer.red { background: radial-gradient(ellipse at 20% 0%, rgba(226,56,74,.28), transparent 60%), linear-gradient(160deg, rgba(76,22,32,.72), rgba(26,10,14,.86)), var(--tex-stone, none) 0 0 / 64px 64px, #1a0a0e; }
+.offer.blue { background: radial-gradient(ellipse at 20% 0%, rgba(80,150,255,.26), transparent 60%), linear-gradient(160deg, rgba(22,38,76,.74), rgba(10,14,26,.88)), var(--tex-stone, none) 0 0 / 64px 64px, #0a0e1a; }
+.offer .ohead { display: flex; align-items: flex-start; gap: 8px; }
+.offer .ohead .ot { flex: 1; min-width: 0; }
+.offer .ribbon { position: relative; top: auto; right: auto; transform: none; flex: none; margin: -9px -9px 0 0; padding: 5px 10px 6px 18px; white-space: nowrap;
+  font: 800 11px var(--body); letter-spacing: .04em; color: #ffe0c8; text-shadow: 0 1px 0 #000;
+  background: linear-gradient(180deg, rgba(160,24,36,.8), rgba(90,8,16,.92)), var(--tex-stone, none) 0 0 / 64px 64px, #6a0c14;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 10px 50%); box-shadow: inset 0 -2px 0 #c9953a, inset 0 2px 0 rgba(255,200,170,.18); }

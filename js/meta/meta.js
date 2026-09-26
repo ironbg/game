@@ -76,7 +76,7 @@
     if (rw.energy) out.push({ icon: 'i_energy', text: rw.energy });
     if (rw.passXp) out.push({ icon: 'n_pass', text: rw.passXp });
     if (rw.chest) out.push({ icon: E.chests[rw.chest].icon, text: t('chest.' + rw.chest) });
-    if (rw.gear) out.push({ icon: 'c_chest', text: t('rarity.' + E.rarities[rw.gear.rarity]), rarity: rw.gear.rarity });
+    if (rw.gear) out.push({ icon: 'g_wrath_amulet', text: t('rarity.' + E.rarities[rw.gear.rarity]), rarity: rw.gear.rarity });
     if (rw.hero) out.push({ icon: 'h_' + rw.hero, text: t('hero.' + rw.hero + '.name') });
     return out;
   };
